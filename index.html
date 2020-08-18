@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Covid (Monitoreo mundial)</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="new-style.css">
+  <link rel="icon" href="https://image.flaticon.com/icons/png/512/2746/2746582.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
+  <script src="map-style.js"></script>
+  <script src="script.js"></script>
+  <script src="charts.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container-fluid main">
+    <div class="row">
+     <div class="recomendaciones col-lg-1">
+       <div class="recomendaciones-stuff">
+      <h3>Tips</h3>
+      <img src="images/recomendaciones/01.png" alt="lavarmanos" srcset="">
+      <p>Lávate las manos</p>
+      <img src="images/recomendaciones/02.png" alt="tapabocas" srcset="">
+      <p>Usa tapabocas</p>
+  
+      <img src="images/recomendaciones/03.png" alt="usagel" srcset="">
+      <p>Desinfecta con gel antibacterial</p>
+  
+      <img src="images/recomendaciones/04.png" alt="cuarentena" srcset="">
+      <p>Quédate en cuarentena</p>
+  
+      <img src="images/recomendaciones/05.png" alt="sincontacto" srcset="">
+      <p>Evita el contacto corporal</p>
+    </div>
+    </div>
+
+      <div class="col-sm-12 col-md-10 col-lg-11">
+        <div class="row header-container">
+          <div class="col col-md-3 title-container">
+            <h1>Covid-19</h1>
+            <h4>Coronavirus</h4>
+          </div>
+          <div class="col-sm-12 col-md-9 search-container mb-6 mb-lg-0">
+            <div class="input-group">
+              <div class="col dropdown">
+                <input type="text" autocomplete="off" onkeyup="filterFunction()" id="myInput" class="form-control"
+                  placeholder="Busca el país" aria-label="Search Location" aria-describedby="basic-addon1">
+                <div id="myDropdown" class="dropdown-content">
+                </div>
+              </div>
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row row-stats-chart">
+          <div class="stats-container mt-3 col-sm-12 col-md-7 col-lg-4">
+            <div class="carta col-sm-12 col-lg-6 mb-2 mb-lg-0">
+              <div class="card cases activemap" onclick=" toggleActive(this,'#33cccc',0,'cases')">
+                <div class="card-body">
+                  <div class="highlight"></div>
+                  <h6 class="card-title">Casos Totales</h6>
+                  <h3 class="todays-cases"></h3>
+                  <h8 class="card-subtitle mb-2 total-number"></h8>
+                </div>
+              </div>
+            </div>
+            <div class="carta col-sm-12 col-md-12 col-lg-6 mb-2 mb-lg-0">
+              <div class="card active" onclick=" toggleActive(this,'#6666ff',0,'active')">
+                <div class="card-body">
+                  <div class="highlight"></div>
+                  <h6 class="card-title">Casos Activos</h6>
+                  <h3 class="todays-actives"></h3>
+                  <h8 class="card-subtitle mb-2 active-number"></h8>
+                </div>
+              </div>
+            </div>
+
+            <div class="carta col-sm-12 col-md-12 col-lg-6 mb-2 mb-lg-0">
+              <div class="card recovered " onclick=" toggleActive(this,'#66ff00',1,'recovered')">
+                <div class="card-body">
+                  <div class="highlight recovered"></div>
+                  <h6 class="card-title">Recuperados</h6>
+                  <h3 class="todays-recoverd"></h3>
+                  <h8 class="card-subtitle mb-2 recovered-number"></h8>
+                </div>
+              </div>
+            </div>
+            <div class="carta col-sm-12 col-md-12 col-lg-6 mb-2 mb-lg-0">
+              <div class="card deaths" onclick=" toggleActive(this,'red',2,'deaths')">
+                <div class="card-body">
+                  <div class="highlight"></div>
+                  <h6 class="card-title">Muertes</h6>
+                  <h3 class="todays-deaths"></h3>
+                  <h8 class="card-subtitle mb-2 deaths-number"></h8>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container col-sm-12 col-md-5 col-lg-8">
+            <div class=" col bar-line-container">
+              <h4 style="text-align: center;">Casos por categoría</h4>
+              <p style="text-align: center; font-size: 11px;">Dale click a las cartas de al lado</p>
+              <div class="linear-chart" style="width:99%;">
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row map-table">
+          <div class="map-container1 mt-3 col-sm-12 col-md-7">
+            <!-- <div class="col"> -->
+            <div class="map-container">
+              <div class="refresh-container">
+                <i onclick="refresh()" class="fa fa-refresh refresh-btn" aria-hidden="true"></i>
+              </div>
+              <div id="map"></div>
+            </div>
+            <!-- </div>   -->
+          </div>
+          <div class="table-container col-sm-12 col-md-5">
+            <table id="tip" class="table">
+              <thead>
+                <tr>
+                  <th scope="col" class="hide">Bandera</th>
+                  <th scope="col" class="table-pointer" onclick="sortNewTable('country',1);">Pais<i 
+                    class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" class="table-pointer" onclick="sortNewTable('cases',2);">Casos <i
+                      class="fa fa-sort"></i></th>
+                  <!-- <th scope="col" class="table-pointer" onclick="sortNewTable('active',3);">Activos <i
+                        class="fa fa-sort"></i></th> -->
+                  <th scope="col" class="table-pointer" onclick="sortNewTable('recovered',3);">Sanos<i
+                      class="fa fa-sort"></i></th>
+                  <th scope="col" class="table-pointer" onclick="sortNewTable('deaths',4);">Muertes <i
+                      class="fa fa-sort"></i></th>
+                </tr>
+              </thead>
+              <tbody id="table-data">
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row video-pastel">
+          <div class="youtube-container col-sm-12 col-md-7">
+            <div class="col video-container">
+              <h3>Sintomas</h3>
+              <div class="video">
+                <iframe width="99%" height="400px" src="https://www.youtube.com/embed/QYVNK_Mt1Pw" frameborder="0"
+                  allow="accelerometer; autoplay; " allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+
+          <div class="pie-container col-sm-12 col-md-5">
+            <h3 style="margin-bottom: 15px;">Gráfico de pastel</h3>
+            <div class="p-3" style="width: 100%;">
+              <canvas id="myPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJ7VvobsIYLr3Pe6cTNUnIUvzgpV2Na-o&callback=initMap"
+      async defer></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"></script>
+    <script src="listerer.js"></script>
+</body>
+
+</html>
